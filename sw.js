@@ -1,6 +1,6 @@
 // Órbita Júpiter · service worker (juego sin internet) · @cybercadtm
 // Cambia VERSION cada vez que subas una versión nueva del juego.
-const VERSION = 'orbita-v87';
+const VERSION = 'orbita-v88';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
