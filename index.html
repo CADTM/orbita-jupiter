@@ -1006,7 +1006,7 @@ h1 em{font-style:normal;color:var(--ochre)}
   </div>
 </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="vendor/three-0.128.0.min.js"></script>
 <script>
 (() => {
 'use strict';
@@ -4583,7 +4583,7 @@ function rankPush(){if(!NET.user||!NET.fs)return;const cs=Object.values(platSave
   NET.fs.collection('ranking').doc(NET.user.uid).set({name:netName(),lvl:best.lvl,cls:best.cls,adv:!!(best.advc&&best.advc[best.cls]),bosses:Object.values(platSave.bossDex||{}).reduce((a,b)=>a+b,0),t:Date.now()}).catch(()=>{});}
 async function openRanking(tab){if(!NET.user||!NET.fs){toast('Inicia sesión en «Online y nube» para ver el salón de la fama');return;}tab=tab||'lvl';rankPush();
   openPx('Salón de la <em>fama</em>','<p class="sub">Cargando…</p>');try{const s=await NET.fs.collection('ranking').orderBy(tab,'desc').limit(20).get();const rows=[];s.forEach(d=>rows.push([d.id,d.data()]));
-    $('pxBody').innerHTML=`<div class="chips"><button type="button" class="chipBtn ${tab==='lvl'?'on':''}" data-px="lvl">Por nivel</button><button type="button" class="chipBtn ${tab==='bosses'?'on':''}" data-px="bosses">Por jefes vencidos</button></div><ol class="rankList">${rows.map(([id,r],i)=>`<li class="${id===NET.user.uid?'me':''}"><b>${i<3?['🥇','🥈','🥉'][i]:i+1}</b><span>${esc(r.name||'Jugador')}<small>${esc((r.adv&&ADV[r.cls]?ADV[r.cls].n:(CLS[r.cls]||{}).name)||'')}</small></span><i>${tab==='lvl'?'Nv '+r.lvl:r.bosses+' 👑'}</i></li>`).join('')||'<p class="sub">Aún no hay nadie.</p>'}</ol>`;
+    $('pxBody').innerHTML=`<div class="chips"><button type="button" class="chipBtn ${tab==='lvl'?'on':''}" data-px="lvl">Por nivel</button><button type="button" class="chipBtn ${tab==='bosses'?'on':''}" data-px="bosses">Por jefes vencidos</button></div><ol class="rankList">${rows.map(([id,r],i)=>`<li class="${id===NET.user.uid?'me':''}"><b>${i<3?['🥇','🥈','🥉'][i]:i+1}</b><span>${esc(r.name||'Jugador')}<small>${esc((r.adv&&ADV[r.cls]?ADV[r.cls].n:(CLS[r.cls]||{}).name)||'')}</small></span><i>${tab==='lvl'?'Nv '+(+r.lvl||0):(+r.bosses||0)+' 👑'}</i></li>`).join('')||'<p class="sub">Aún no hay nadie.</p>'}</ol>`;
     pxClick=id=>{if(id==='lvl'||id==='bosses')openRanking(id);};}catch(e){$('pxBody').innerHTML=`<p class="sub">❌ ${esc(fbErr(e))}</p>`;}}
 /* --- mercado entre jugadores (Firestore trades) --- */
 NET.inTr=[];NET.outTr=[];NET.trUnsub=[];
@@ -8628,7 +8628,7 @@ function arWeekRec(n){const o=OW(),k=weekKey();if(!o.arenaWeek||o.arenaWeek.k!==
   openPx('Ranking de la <em>mazmorra</em>','<p class="sub">Cargando…</p>');try{const s=await NET.fs.collection('ranking').orderBy(tab,'desc').limit(40).get();let rows=[];s.forEach(d=>rows.push([d.id,d.data()]));const wk=weekKey();if(tab==='aw')rows=rows.filter(([,r])=>r.awk===wk&&r.aw>0);rows=rows.filter(([,r])=>(r[tab]||0)>0).slice(0,20);
     $('pxBody').innerHTML=`<div class="chips"><button type="button" class="chipBtn ${tab==='arena'?'on':''}" data-px="arena">🏟️ Mejor de siempre</button><button type="button" class="chipBtn ${tab==='aw'?'on':''}" data-px="aw">📅 Esta semana</button><button type="button" class="chipBtn" data-px="lvl">⭐ Por nivel</button></div>
       ${tab==='aw'?'<p class="sub">Los 3 primeros de la semana ganan un premio (🥇 3000 🪙 + objeto legendario · 🥈 2000 🪙 · 🥉 1000 🪙). Se reclama al entrar a la mazmorra la semana siguiente.</p>':''}
-      <ol class="rankList">${rows.map(([id,r],i)=>`<li class="${id===NET.user.uid?'me':''}"><b>${i<3?['🥇','🥈','🥉'][i]:i+1}</b><span>${esc(r.name||'Jugador')}${r.title?` <small style="color:#ffd36b">«${esc(r.title)}»</small>`:''}<small>${esc((CLS[r.cls]||{}).name||'')}${r.clan?' · 🛡️ '+esc(r.clan):''}</small></span><i>Nivel ${r[tab]}</i></li>`).join('')||'<p class="sub">Aún no hay nadie. ¡Sé el primero!</p>'}</ol>`;
+      <ol class="rankList">${rows.map(([id,r],i)=>`<li class="${id===NET.user.uid?'me':''}"><b>${i<3?['🥇','🥈','🥉'][i]:i+1}</b><span>${esc(r.name||'Jugador')}${r.title?` <small style="color:#ffd36b">«${esc(r.title)}»</small>`:''}<small>${esc((CLS[r.cls]||{}).name||'')}${r.clan?' · 🛡️ '+esc(r.clan):''}</small></span><i>Nivel ${+r[tab]||0}</i></li>`).join('')||'<p class="sub">Aún no hay nadie. ¡Sé el primero!</p>'}</ol>`;
     pxClick=id=>{openRanking(id);};}catch(e){$('pxBody').innerHTML=`<p class="sub">❌ ${esc(fbErr(e))}</p>`;}};}
 async function arPrizeCheck(){const o=OW();if(!NET.user||!NET.fs||!o.arenaPrev||o.arenaPrev.claimed)return;try{const s=await NET.fs.collection('ranking').orderBy('aw','desc').limit(40).get();const L=[];s.forEach(d=>{const r=d.data();if(r.awk===o.arenaPrev.k&&r.aw>0)L.push(d.id);});const pos=L.indexOf(NET.user.uid);o.arenaPrev.claimed=1;
   if(pos>=0&&pos<3){const c=[3000,2000,1000][pos];addCoins(c);if(pos===0)platSave.inv.items.push(rollItem(3));(o.titles=o.titles||{})['Campeón de la mazmorra']=1;savePlat();toast(`🏆 ¡Quedaste ${['🥇 1.º','🥈 2.º','🥉 3.º'][pos]} en la mazmorra la semana pasada! +${c} 🪙${pos===0?' y un objeto legendario':''}`);}else savePlat();}catch(e){}}
